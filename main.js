@@ -2,11 +2,11 @@ import './style.css'
 import Phaser from 'phaser'
 
 const sizes = {
-  width:700,
+  width:800,
   height:600,
 }
 
-const speedDown = 300
+const speedDown = 500
 
 var config = {
   type: Phaser.WEBGL,
@@ -26,10 +26,6 @@ physics: {
     create: create,
     update: update
   }
-
-
-
-
 };
 
 var player;
@@ -38,8 +34,11 @@ var cursors;
 var stars;
 var game = new Phaser.Game(config);
 
-function preload(){
-  this.load.image('sky', 'assets/sky.png');
+
+
+function preload()
+{
+  this.load.image('sky', 'assets/pexels-magda-ehlers-2114014.jpg');
   this.load.image('ground', 'assets/platform.png');
   this.load.image('star', 'assets/star.png');
   this.load.image('bomb', 'assets/bomb.png');
@@ -48,12 +47,17 @@ function preload(){
       { frameWidth: 32, frameHeight: 48 }
   );
 }
- 
 
+
+function PlatformLocation(x,y){
+  let plat = platforms.create(x,y, 'ground');
+  return plat 
+
+}
 
 function create(){
   this.add.image(400, 300, 'sky');
-  this.add.image(400, 300, 'star');
+ 
 
   platforms = this.physics.add.staticGroup();
   platforms.create(400,568, 'ground').setScale(2).refreshBody();
@@ -61,8 +65,9 @@ function create(){
   platforms.create(600, 400, 'ground');
   platforms.create(50, 250, 'ground');
   platforms.create(750, 220, 'ground');
+  PlatformLocation(70,300)
 
-  player = this.physics.add.sprite(100,450, 'dude');
+  player = this.physics.add.sprite(100,450, 'dude');    //creates sprite and adds it onto the screen at 100 pxs to  x:100 and y:450
 
   player.setBounce(0.2)
   player.setCollideWorldBounds(true);
