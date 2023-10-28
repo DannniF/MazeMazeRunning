@@ -55,11 +55,13 @@ main{
 #gameCanvas{
   border: 1px solid lightgoldenrodyellow;
   position: absolute;
-  top: 50%;
+  top: 53%;
   left: 50%;
   transform: translate(-50%, -50%);
-  dispaly: flex;
+  display: flex;
   z-index: 1;
+  height: 70vh;
+  width: auto;
 }
 
 .gameUI{}
