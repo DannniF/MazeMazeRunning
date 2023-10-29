@@ -1,5 +1,7 @@
 import './style.css'
 import Phaser from 'phaser'
+import './mazeGeneration'
+import './minimap'
 
 //rewriting code to use class Example extends Phaser.Scene which allows us to ...
 const sizes = {
@@ -16,6 +18,14 @@ var platforms;
 var cursors;
 var stars;
 var keyW;
+var keyE;
+var ffff;
+var camera0;
+var camera1;
+var camera2;
+
+
+
 
 function PlatformLocation(x,y) {
   platforms.create(x,y, 'ground');
@@ -24,17 +34,30 @@ function collectStar (player, star)
 {
     star.disableBody(true, true);
 }
-
-
 function miniMap(){
-  this.map = this.cameras.add(100, 100, 400, 100).setZoom(0.2).setName('bbb');
-  this.map.setBackgroundColor(0x002244);
-  this.map.scrollX = 100;
-  this.map.scrollY = 300;
-  
+
+    ffff = this.cameras.add(100, 100, 400, 100).setZoom(0.5).setName('mini');
+    ffff.scrollX = 300;
+    ffff.scrollY = 300;
+
+
 }
 
+function hidemap(){
+    ffff = this.cameras.add(0, 0, 600, 900).setZoom(0.5).setName('mini');
 
+}
+// function hideMiniMap(){
+//     this.cameras.remove('minimap')
+// }
+// hideElement(elementId){
+//     const element = document.getElementById(elementId)
+//     if(element){
+//       element.style.display = 'none'
+//     }else{
+//       console.log(`${elementId} does not exist`)
+//     }
+// }
 class MazeMazeRunner extends Phaser.Scene{
   constructor (){
     super();
@@ -44,16 +67,25 @@ class MazeMazeRunner extends Phaser.Scene{
     this.load.image('ground', 'assets/platform.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
-    this.load.spritesheet('dude', 
-        'assets/dude.png',
-        { frameWidth: 32, frameHeight: 48 }
-    );
+    // this.load.spritesheet('dude', 
+    //     'assets/dude.png',
+    //     { frameWidth: 32, frameHeight: 48 }
+    // );
+    this.load.spritesheet('dude2','assets/Hobbit/pngs/NEWHOBBITSHEET.png',
+      {frameWidth: 60, frameHeight: 50} )
+    this.load.spritesheet('dude3','assets/Hobbit/pngs/REVERSEDRUN.png',{frameWidth: 60, frameHeight: 50})
+    this.load.spritesheet('dude4','assets/Hobbit/pngs/JUMP.png',{frameWidth: 60, frameHeight: 50})
+    this.cameras.add(0, 0, 600, 900,'main').setZoom(0.5).setName('mini');
+
+   
   }
- 
   create(){
     this.add.image(400, 400, 'sky');
     this.physics.world.setBounds(0,0,2200,600);
-    this.cameras.main.setBounds(0,0,3200,600).setName('main')
+   
+
+
+
  
     // this.matter.world.setBounds(0,0, 3200,600);
  
@@ -66,36 +98,73 @@ class MazeMazeRunner extends Phaser.Scene{
     PlatformLocation(750, 220);
     PlatformLocation(70,300)
   ;
-    player = this.physics.add.sprite(100,450, 'dude');    //creates sprite and adds it onto the screen at 100 pxs to  x:100 and y:450
-    this.cameras.main.startFollow(player, false, 0.2,0.2)
+    player = this.physics.add.sprite(100,450, 'dude2');    //creates sprite and adds it onto the screen at 100 pxs to  x:100 and y:450
+   //changes the size of the sprite character.... but it looks blurry , fix in asperite . 
+    this.cameras.main.startFollow(player, true,) //camera follows player 
 
-
+    
+    // ffff = this.cameras.add(100, 100, 400, 100).setZoom(0.5);
+    // ffff.scrollX = 100;
+    // ffff.scrollY = 300;
+    
     player.setBounce(0.2)
     player.setCollideWorldBounds(true);
+
+   
+    // this.anims.create({
+    //     key:'mainPlayer',
+    //     frames: [
+    //       {key: 'walk1'},
+    //       {key: 'walk2'},
+    //       {key: 'walk3'},
+    //       {key: 'walk4'},
+    //       {key: 'walk5'},
+    //       {key: 'walk6'},
+    //       {key: 'walk7'},
+    //       {key: 'walk8'},
+    //       {key: 'walk9'},
+    //       {key: 'walk10'},
+    //     ],
+    //     frameRate:10,
+    //     repeat: 1
+    // })
+      // this.add.sprite(500,500,'walk1').play('mainPlayer');
   
     this.anims.create({
-      key: 'left',
-      frames: this.anims.generateFrameNumbers('dude', {start: 0, end: 3}),
+      key: 'right',
+      frames: this.anims.generateFrameNumbers('dude2'),
+      start: 0,
+      end: 3,
       frameRate: 10,
       repeate: -1
     });
   
     this.anims.create({
       key: 'turn',
-      frames: [ { key: 'dude', frame: 4 } ],
+      frames: [ { key: 'dude2', frame: 4 } ],
       frameRate: 20
   });
   
   this.anims.create({
-    key: 'right',
-    frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
+    key: 'left',
+    frames: this.anims.generateFrameNumbers('dude3'),
+    start: 0,
+    end: 3,
     frameRate: 10,
     repeat: -1
-  
   });
+  this.anims.create({
+    key: 'jump',
+    frames: this.anims.generateFrameNumbers('dude4'),
+    start: 0,
+    end: 7,
+    frameRate: 30,
+    repeat: 1
+  })
       
         cursors = this.input.keyboard.createCursorKeys()
         keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        keyE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
   
         stars = this.physics.add.group({
           key: 'star',
@@ -113,15 +182,31 @@ class MazeMazeRunner extends Phaser.Scene{
         this.physics.add.collider(stars,platforms);
   
         this.physics.add.overlap(player, stars, collectStar, null, this);
+
+
+        
+
+
+
+
+
   }
   update(){
     if(keyW.isDown){
-      miniMap.call(this)
+      miniMap.call(this) 
+      console.log('MiniMapAdded') 
+    }else {
+      hidemap.call(this)
+    
+    }
+    
+    if(keyE.isDown){
+      hidemap.call(this)
+      console.log('minimap removed')
       
     }
-    if(keyW.isUp){
-       
-    }
+
+  
   
     if (cursors.left.isDown)
     {
