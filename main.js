@@ -36,15 +36,16 @@ function collectStar (player, star)
 }
 function miniMap(){
 
-    ffff = this.cameras.add(100, 100, 400, 100).setZoom(0.5).setName('mini');
-    ffff.scrollX = 300;
-    ffff.scrollY = 300;
+    this.cameras.add(100, 100, 400, 100).setZoom(0.5).setName('mini');
+    this.cameras.scrollX = 300;
+    this.cameras.scrollY = 300;
 
 
 }
 
 function hidemap(){
-    ffff = this.cameras.add(0, 0, 600, 900).setZoom(0.5).setName('mini');
+  this.cameras.add(0, 0, 600, 900,'main').setZoom(1).setName('main');
+
 
 }
 // function hideMiniMap(){
@@ -75,7 +76,7 @@ class MazeMazeRunner extends Phaser.Scene{
       {frameWidth: 60, frameHeight: 50} )
     this.load.spritesheet('dude3','assets/Hobbit/pngs/REVERSEDRUN.png',{frameWidth: 60, frameHeight: 50})
     this.load.spritesheet('dude4','assets/Hobbit/pngs/JUMP.png',{frameWidth: 60, frameHeight: 50})
-    this.cameras.add(0, 0, 600, 900,'main').setZoom(0.5).setName('mini');
+    this.cameras.add(0, 0, 600, 900,'main').setZoom(1).setName('mini');
 
    
   }
@@ -109,7 +110,7 @@ class MazeMazeRunner extends Phaser.Scene{
     
     player.setBounce(0.2)
     player.setCollideWorldBounds(true);
-
+    
    
     // this.anims.create({
     //     key:'mainPlayer',
@@ -182,8 +183,8 @@ class MazeMazeRunner extends Phaser.Scene{
         this.physics.add.collider(stars,platforms);
   
         this.physics.add.overlap(player, stars, collectStar, null, this);
-
-
+        
+      
         
 
 
@@ -239,7 +240,7 @@ class MazeMazeRunner extends Phaser.Scene{
       player.setVelocityY(-330);
     
     }
-    
+      this.cameras.main.startFollow(player, true,)
   }
 }
 
