@@ -1,7 +1,7 @@
 import './style.css'
 import Phaser from 'phaser'
-import './mazeGeneration'
-import './minimap'
+
+
 
 //rewriting code to use class Example extends Phaser.Scene which allows us to ...
 const sizes = {
@@ -15,21 +15,21 @@ const gravity = {
 }
 var player;
 var platforms;
-var cursors;
 var stars;
 var keyW;
-var keyE;
-var ffff;
-var camera0;
-var camera1;
-var camera2;
 
 
 
-
-function PlatformLocation(x,y) {
-  platforms.create(x,y, 'ground');
+function PlatformLocation(x,y,z) {
+  platforms.create(x,y,z);
 }
+function xPlatformLocation(x,y) {
+  platforms.create(x,y, 'xAxis');
+}
+function yPlatformLocation(x,y) {
+  platforms.create(x,y,'yAxis');
+}
+
 function collectStar (player, star)
 {
     star.disableBody(true, true);
@@ -39,97 +39,80 @@ function miniMap(){
     this.cameras.add(100, 100, 400, 100).setZoom(0.5).setName('mini');
     this.cameras.scrollX = 300;
     this.cameras.scrollY = 300;
-
-
 }
-
 function hidemap(){
-  this.cameras.add(0, 0, 600, 900,'main').setZoom(1).setName('main');
+  this.cameras.add(0, 0, 600, 900,).setZoom(.3).setName('main');
 
 
 }
-// function hideMiniMap(){
-//     this.cameras.remove('minimap')
-// }
-// hideElement(elementId){
-//     const element = document.getElementById(elementId)
-//     if(element){
-//       element.style.display = 'none'
-//     }else{
-//       console.log(`${elementId} does not exist`)
-//     }
-// }
 class MazeMazeRunner extends Phaser.Scene{
   constructor (){
     super();
   }
   preload(){
+    //background image 
     this.load.image('sky', 'assets/pexels-magda-ehlers-2114014.jpg');
+    //old platform image 
     this.load.image('ground', 'assets/platform.png');
+    //star pickup image 
     this.load.image('star', 'assets/star.png');
+    //not used asset 
     this.load.image('bomb', 'assets/bomb.png');
-    // this.load.spritesheet('dude', 
-    //     'assets/dude.png',
-    //     { frameWidth: 32, frameHeight: 48 }
-    // );
+    //image tilemap and JSON file 
+    this.load.tilemapTiledJSON('mapset','assets/DemoMap.json') //this is causing issues 
+    this.load.image('tile','assets/Tileset.png') //this is working becuase it shows when created 
+    this.load.image('mainstage', 'assets/platforms/MainStageTop.png')
+    this.load.image('xAxis', 'assets/platforms/xAxisCol.png')
+    this.load.image('xAxis', 'assets/platforms/yAxisCol.png')
+  
+
+
+    //character sprites for jumping running and idle animations
     this.load.spritesheet('dude2','assets/Hobbit/pngs/NEWHOBBITSHEET.png',
       {frameWidth: 60, frameHeight: 50} )
     this.load.spritesheet('dude3','assets/Hobbit/pngs/REVERSEDRUN.png',{frameWidth: 60, frameHeight: 50})
     this.load.spritesheet('dude4','assets/Hobbit/pngs/JUMP.png',{frameWidth: 60, frameHeight: 50})
     this.cameras.add(0, 0, 600, 900,'main').setZoom(1).setName('mini');
+    this.load.image('mapPNG','assets/imageofmap.png')
 
-   
   }
   create(){
     this.add.image(400, 400, 'sky');
-    this.physics.world.setBounds(0,0,2200,600);
-   
-
-
-
- 
+    this.physics.world.setBounds(-400,0,2200,1200); 
     // this.matter.world.setBounds(0,0, 3200,600);
- 
-  
+
+    // const map = this.make.tilemap({key: 'mapset'});
+    // const tileset = map.addTilesetImage('Ground','tiles')
+
+    this.add.image(400,200, 'mapPNG');
+    // let map = this.make.tilemap({ key: 'mapset' });
+    // let tileset = map.addTilesetImage('Ground', 'tile');
+    // let myLayer = map.createStaticLayer('platform', tileset);
+
+    // myLayer.setCollisionByProperty({ collides: true });
+    
+    
+
+    //old platforms my delete or may add for movement 
     platforms = this.physics.add.staticGroup();
-    PlatformLocation(400,568)
+    PlatformLocation(400,568, 'ground')
     // .setScale(2).refreshBody();   Does not work with my created function ... figure out how to implement without 
-    PlatformLocation(600, 400);
-    PlatformLocation(50, 250);
-    PlatformLocation(750, 220);
-    PlatformLocation(70,300)
-  ;
+    // PlatformLocation(600, 400, 'ground');
+    // PlatformLocation(50, 250, 'ground');
+    // PlatformLocation(750, 220, 'ground');
+    // PlatformLocation(70,300, 'ground')
+    
+    const platform1 = this.physics.add.image(600,128, 'ground').setImmovable(true).setVelocity(0,50)
+    platform1.body.setAllowGravity(false)
+  
     player = this.physics.add.sprite(100,450, 'dude2');    //creates sprite and adds it onto the screen at 100 pxs to  x:100 and y:450
    //changes the size of the sprite character.... but it looks blurry , fix in asperite . 
     this.cameras.main.startFollow(player, true,) //camera follows player 
-
     
-    // ffff = this.cameras.add(100, 100, 400, 100).setZoom(0.5);
-    // ffff.scrollX = 100;
-    // ffff.scrollY = 300;
-    
+ 
     player.setBounce(0.2)
     player.setCollideWorldBounds(true);
     
-   
-    // this.anims.create({
-    //     key:'mainPlayer',
-    //     frames: [
-    //       {key: 'walk1'},
-    //       {key: 'walk2'},
-    //       {key: 'walk3'},
-    //       {key: 'walk4'},
-    //       {key: 'walk5'},
-    //       {key: 'walk6'},
-    //       {key: 'walk7'},
-    //       {key: 'walk8'},
-    //       {key: 'walk9'},
-    //       {key: 'walk10'},
-    //     ],
-    //     frameRate:10,
-    //     repeat: 1
-    // })
-      // this.add.sprite(500,500,'walk1').play('mainPlayer');
   
     this.anims.create({
       key: 'right',
@@ -163,9 +146,9 @@ class MazeMazeRunner extends Phaser.Scene{
     repeat: 1
   })
       
-        cursors = this.input.keyboard.createCursorKeys()
+       this.cursors = this.input.keyboard.createCursorKeys()
         keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-        keyE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+      
   
         stars = this.physics.add.group({
           key: 'star',
@@ -200,21 +183,12 @@ class MazeMazeRunner extends Phaser.Scene{
       hidemap.call(this)
     
     }
-    
-    if(keyE.isDown){
-      hidemap.call(this)
-      console.log('minimap removed')
-      
-    }
-
-  
-  
-    if (cursors.left.isDown)
+    if (this.cursors.left.isDown)
     {
       player.setVelocityX(-160); 
       player.anims.play('left', true);
     }
-    else if (cursors.right.isDown)
+    else if (this.cursors.right.isDown)
     {
         player.setVelocityX(160);
     
@@ -227,16 +201,16 @@ class MazeMazeRunner extends Phaser.Scene{
         player.anims.play('turn');
     }
     
-    if (cursors.up.isDown && player.body.touching.down)
+    if (this.cursors.up.isDown && player.body.touching.down)
     {
         player.setVelocityY(-330);
     }
-    if (cursors.up.isDown && player.body.touching.right){
+    if (this.cursors.up.isDown && player.body.touching.right){
         player.setVelocityY(-330);
     
     }
     
-    if (cursors.up.isDown && player.body.touching.left){
+    if (this.cursors.up.isDown && player.body.touching.left){
       player.setVelocityY(-330);
     
     }
