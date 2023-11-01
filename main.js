@@ -9,7 +9,7 @@ const sizes = {
   height: 900,
 }
 const gravity = {
-  light: 400,
+  light: 100,
   normal:600,
   heavy: 900,
 }
@@ -20,22 +20,48 @@ var keyW;
 
 function xmultiplat(x,y,b){
  
-  for(let i = 0; i <= b; i ++){
+  for(let i = 1; i <= b; i ++){
   platforms.create.x = x 
-  x =  platforms.create.x + 130
+  x =  platforms.create.x + 64
   platforms.create(x,y,'xAxis'); 
   console.log('hello')
   
   }
 
+}
+function xmultiplat2(x,y,b){
+ 
+  for(let i = 1; i <= b; i ++){
+  platforms.create.x = x 
+  x =  platforms.create.x + 64
+  platforms.create(x,y,'pixel'); 
+  console.log('hello')
+  
+  }
 
-
-  function newMulti(x, y, amount){
-    x = x + 15
-    for(let i = 0; i < amount; i++)
-    platforms.create(x,y,'xAxis')
+}
+function ymultiplat(x,y,b){
+ 
+  for(let i = 1; i <= b; i ++){
+  platforms.create.y = y 
+  y =  platforms.create.y + 64
+  platforms.create(x,y,'yAxis'); 
+  console.log('hello')
+  
   }
 }
+function ymultiplat2(x,y,b){
+ 
+  for(let i = 1; i <= b; i ++){
+  platforms.create.y = y 
+  y =  platforms.create.y + 64
+  platforms.create(x,y,'pixel'); 
+  console.log('hello')
+  
+  }
+}
+
+
 function PlatformLocation(x,y,z) {
   platforms.create(x,y,z);
 }
@@ -80,6 +106,7 @@ class MazeMazeRunner extends Phaser.Scene{
     this.load.image('mainstage', 'assets/platforms/MainStageTop.png')
     this.load.image('xAxis', 'assets/platforms/xAxisCol.png')
     this.load.image('yAxis', 'assets/platforms/yAxisCol.png')
+    this.load.image('pixel', 'assets/platforms/pixel2.png')
   
 
 
@@ -94,13 +121,13 @@ class MazeMazeRunner extends Phaser.Scene{
   }
   create(){
     this.add.image(400, 400, 'sky');
-    this.physics.world.setBounds(-400,0,2200,1200); 
+    this.physics.world.setBounds(-1500,-1500,3200,3200); 
     // this.matter.world.setBounds(0,0, 3200,600);
 
     // const map = this.make.tilemap({key: 'mapset'});
     // const tileset = map.addTilesetImage('Ground','tiles')
 
-    this.add.image(400,200, 'mapPNG');
+    this.add.image(400,200, 'mapPNG').setScale(2);
     // let map = this.make.tilemap({ key: 'mapset' });
     // let tileset = map.addTilesetImage('Ground', 'tile');
     // let myLayer = map.createStaticLayer('platform', tileset);
@@ -121,63 +148,101 @@ class MazeMazeRunner extends Phaser.Scene{
 
     //created small sections of ground to check for collision x-axis and y axis 
     //mainplatform ground level
-    xPlatformLocation(-50,890)
-    xPlatformLocation(80,890)
-    xPlatformLocation(210,890)
-    xPlatformLocation(340,890)
-    xPlatformLocation(470,890)
-    xPlatformLocation(600,890)
-    xPlatformLocation(730,890)
-    xPlatformLocation(730,890)
-    xPlatformLocation(860,890)
-    xPlatformLocation(910,890)
-    //leftside of mainplatform
-    xPlatformLocation(-50,925)
-    //rightside of mainplatform
-    xPlatformLocation(910,925)
-    xPlatformLocation(890,960)
-    //bottom strip of platform
-    xPlatformLocation(-180,1080)
-    xPlatformLocation(-180,1080)
-    xPlatformLocation(-180,1080)
-    xPlatformLocation(-50,1080)
-    xPlatformLocation(80,1080)
-    xPlatformLocation(210,1080)
-    xPlatformLocation(340,1080)
-    xPlatformLocation(470,1080)
-    xPlatformLocation(600,1080)
-    yPlatformLocation(580,1000)
-    xPlatformLocation(500,970)
-    xPlatformLocation(370,970)
-    xPlatformLocation(240,970)
-    xPlatformLocation(90,970)
-    //maze collision 
-    yPlatformLocation(-200,805)
-    yPlatformLocation(-200,680)
-    yPlatformLocation(-200,680)
-    yPlatformLocation(-200,555)
-    yPlatformLocation(-200,430)
-    yPlatformLocation(-200,305)
-    yPlatformLocation(-200,180)
-    //split
-    xPlatformLocation(-150,120)
-    //split
-    yPlatformLocation(-200,805)
-    yPlatformLocation(-200,680)
-    yPlatformLocation(-200,680)
-    yPlatformLocation(-200,555)
-    yPlatformLocation(-200,430)
-    yPlatformLocation(-200,305)
-    yPlatformLocation(-200,180)
+    
+    // xmultiplat(-450,1225, 12)
+    // xPlatformLocation(1200,1225, 12)//for spaces which cant be filled with the function above. 
+    // xmultiplat(-360,1260, 12)
+    // xmultiplat(-360,1295, 12)
+    // xmultiplat(-270,1330, 11)
+    // xmultiplat(-270,1365, 10)
 
-    xmultiplat(100,700,4)
+
+
+    // xPlatformLocation(80,890)
+    // xPlatformLocation(210,890)
+    // xPlatformLocation(340,890)
+    // xPlatformLocation(470,890)
+    // xPlatformLocation(600,890)
+    // xPlatformLocation(730,890)
+    // xPlatformLocation(730,890)
+    // xPlatformLocation(860,890)
+    // xPlatformLocation(910,890)
+    // //leftside of mainplatform
+    // xPlatformLocation(-50,925)
+    // //rightside of mainplatform
+    // xPlatformLocation(910,925)
+    // xPlatformLocation(890,960)
+    // //bottom strip of platform
+    // xPlatformLocation(-180,1080)
+    // xPlatformLocation(-180,1080)
+    // xPlatformLocation(-180,1080)
+    // xPlatformLocation(-50,1080)
+    // xPlatformLocation(80,1080)
+    // xPlatformLocation(210,1080)
+    // xPlatformLocation(340,1080)
+    // xPlatformLocation(470,1080)
+    // xPlatformLocation(600,1080)
+    // yPlatformLocation(580,1000)
+    // xPlatformLocation(500,970)
+    // xPlatformLocation(370,970)
+    // xPlatformLocation(240,970)
+    // xPlatformLocation(90,970)
+    // //maze collision 
+    // yPlatformLocation(-200,805)
+    // yPlatformLocation(-200,680)
+    // yPlatformLocation(-200,680)
+    // yPlatformLocation(-200,555)
+    // yPlatformLocation(-200,430)
+    // yPlatformLocation(-200,305)
+    // yPlatformLocation(-200,180)
+    // //split
+    // xPlatformLocation(-150,120)
+    // //split
+    // yPlatformLocation(-200,805)
+    // yPlatformLocation(-200,680)
+    // yPlatformLocation(-200,680)
+    // yPlatformLocation(-200,555)
+    // yPlatformLocation(-200,430)
+    // yPlatformLocation(-200,305)
+    // yPlatformLocation(-200,180)
+// main platform
+    xmultiplat2(-650,1580,34)
+    xmultiplat2(-590,1644,33)
+    xmultiplat2(-480,1708,31)
+    xmultiplat2(-330,1772,28)
+    xmultiplat2(700,1836,10)
+    xmultiplat2(700,1900,9)
+    xmultiplat2(-900,1964,33)
+    xmultiplat2(-900,2028,33)
+  //maze above x axis 
+  xmultiplat2(-470,1260,25)
+  xmultiplat2(500,1070,8)
+  xmultiplat2(620,870,5)
+  xmultiplat2(685,680,4)
+  xmultiplat2(820,490,4)
+
+  //maze above y axis
+    ymultiplat2(-210,100,15)
+    ymultiplat2(-400,30,18)
+    ymultiplat2(-600,35,19)
+    ymultiplat2(-780,35,23)
+    ymultiplat2(-20,100,13)
+    ymultiplat2(175,100,13)
+    ymultiplat2(370,295,10)
+    ymultiplat2(370,1065,2)
+    ymultiplat2(620,100,2)
+    ymultiplat2(945,-150,6) //a
+    // ymultiplat2(1140,-210,22) //b
+    ymultiplat2(1140,-150,21)
+    ymultiplat2(1330,-150,22)
+    ymultiplat2(1520,46,19)
     
     // const platform1 = this.physics.add.image(600,128, 'ground').setImmovable(true).setVelocity(0,50)
     // platform1.body.setAllowGravity(false)
   
-    player = this.physics.add.sprite(100,450, 'dude2');    //creates sprite and adds it onto the screen at 100 pxs to  x:100 and y:450
+    player = this.physics.add.sprite(800,500, 'dude2');    //creates sprite and adds it onto the screen at 100 pxs to  x:100 and y:450
    //changes the size of the sprite character.... but it looks blurry , fix in asperite . 
-    this.cameras.main.startFollow(player, true,).setZoom(.5) //camera follows player 
+    this.cameras.main.startFollow(player, true,).setZoom(.25) //camera follows player 
     
  
     player.setBounce(0.2)
