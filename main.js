@@ -7,7 +7,7 @@ const sizes = {
 }
 const gravity = {
   light: 650,
-  normal:600,
+  normal:800,
   heavy: 900,
 }
 var player;
@@ -23,7 +23,7 @@ function xmultiplat2(x,y,b){
   platforms.create.x = x 
   x =  platforms.create.x + 64
   platforms.create(x,y,'pixel'); 
-  console.log('hello')
+ 
   }
 }
 function ymultiplat2(x,y,b){
@@ -31,7 +31,7 @@ function ymultiplat2(x,y,b){
   platforms.create.y = y 
   y =  platforms.create.y + 64
   platforms.create(x,y,'pixel'); 
-  console.log('hello')
+  
   }
 }
 function dmgMultPlat(x,y,b){
@@ -39,7 +39,7 @@ function dmgMultPlat(x,y,b){
   dmgplatforms.create.x = x 
   x =  dmgplatforms.create.x + 64
   platforms.create(x,y,'pixel'); 
-  console.log('hello')
+ 
   }
 }
 // function xStarGroup(x,y,b){
@@ -55,7 +55,6 @@ function xStarGroup(x,y,b,spacing){
     stars.create.x = x 
     x =  stars.create.x + spacing
     stars.create(x,y,'star'); 
-    console.log('hello')
     }
 }
 function yStarGroup(x,y,b,spacing){
@@ -63,7 +62,6 @@ function yStarGroup(x,y,b,spacing){
     stars.create.y = y 
     y =  stars.create.y + spacing
     stars.create(x,y,'star'); 
-    console.log('hello')
     }
 }
 
@@ -94,8 +92,9 @@ class MazeMazeRunner extends Phaser.Scene{
     //star pickup image 
     this.load.image('star', 'assets/star.png');
     //not used asset 
-    this.load.image('bomb', 'assets/bomb.png');
-    this.load.image('pixel', 'assets/platforms/pixel2.png')
+    this.load.image('bomb', 'assets/bomb.png')
+   let yo = this.load.image('pixel', 'assets/platforms/purple.png')
+    
   
     //character sprites for jumping running and idle animations
     this.load.spritesheet('dude2','assets/Hobbit/pngs/NEWHOBBITSHEET.png',
@@ -105,10 +104,11 @@ class MazeMazeRunner extends Phaser.Scene{
     this.cameras.add(0, 0, 600, 900,'main').setZoom(1).setName('mini');
     this.load.image('mapPNG','assets/imageofmap.png')
     
+   
 
   }
   create(){
-  this.add.image(400, 400, 'sky').setScale(2);
+
   this.physics.world.setBounds(-2000,-2000,4200,4200); 
   platforms = this.physics.add.staticGroup();
     //main spawn platform
@@ -178,15 +178,18 @@ class MazeMazeRunner extends Phaser.Scene{
     ymultiplat2(1455,-1500,9)
     ymultiplat2(1455,-790,3)
     ymultiplat2(1650,-1690,23)
-    this.add.image(400,200, 'mapPNG').setScale(2);
 
     dmgplatforms= this.physics.add.staticGroup();
     dmgMultPlat(-2800,2200,200)
+
+    this.add.image(400, 400, 'sky').setScale(2);
+    this.add.image(400,200, 'mapPNG').setScale(2);
+
   
     player = this.physics.add.sprite(100,1520, 'dude2');
     player.setBounce(0.2)
     player.setCollideWorldBounds(true);
-    this.cameras.main.startFollow(player, true,).setZoom(.2) //camera follows player 
+    this.cameras.main.startFollow(player, true,).setZoom(1) //camera follows player 
     
   //sprite animations for main character 
     this.anims.create({
@@ -286,6 +289,8 @@ class MazeMazeRunner extends Phaser.Scene{
 
         this.cursors = this.input.keyboard.createCursorKeys()
         keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+
+     
         
   }
   update(){
@@ -318,6 +323,8 @@ class MazeMazeRunner extends Phaser.Scene{
     {player.setVelocityY(-630);}
     if (this.cursors.up.isDown && player.body.touching.left){
       player.setVelocityY(-630);}
+      if (this.cursors.up.isDown && this.cursors.left.isDown && player.body.touching.top){
+        player.setVelocityY(-630);}
 
   this.cameras.main.startFollow(player, true,)
   }
@@ -332,7 +339,7 @@ physics: {
   default:"arcade",
     arcade:{
       gravity:{y:gravity.light},
-      debug: true
+      debug: false
     }
 },
   scene: MazeMazeRunner
