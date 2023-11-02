@@ -14,8 +14,15 @@ var player;
 var platforms;
 var dmgplatforms;
 var stars;
-var stars2;
 var keyW; //may not include map in final game due to lag build up, but i think the culptret is the constant checking of else if . 
+var points = 0
+var textScore
+var textTime
+var remainingTime 
+var timedEvent
+var music
+
+
 
 
 function xmultiplat2(x,y,b){
@@ -71,17 +78,16 @@ function collectStar (player, star)
 {
     star.disableBody(true, true);
 }
-// function miniMap(){
+function miniMap(){
+    this.minimap =  this.cameras.add(100, 100, 400, 100).setZoom(0.5).setName('mini');
+    this.cameras.scrollX = 300;
+    this.cameras.scrollY = 300;
+    
+}
+function hidemap(){
+  this.minimap = this.cameras.add(100, 100, 400, 100).setZoom(0.5).setName('mini').setVisible(false);
 
-//     this.cameras.add(100, 100, 400, 100).setZoom(0.5).setName('mini');
-//     this.cameras.scrollX = 300;
-//     this.cameras.scrollY = 300;
-// }
-// function hidemap(){
-//   this.cameras.add(0, 0, 600, 900,).setZoom(.5).setName('main');
-
-
-// }
+}
 class MazeMazeRunner extends Phaser.Scene{
   constructor (){
     super();
@@ -101,7 +107,6 @@ class MazeMazeRunner extends Phaser.Scene{
       {frameWidth: 60, frameHeight: 50} )
     this.load.spritesheet('dude3','assets/Hobbit/pngs/REVERSEDRUN.png',{frameWidth: 60, frameHeight: 50})
     // this.load.spritesheet('dude4','assets/Hobbit/pngs/JUMP.png',{frameWidth: 60, frameHeight: 50})
-    this.cameras.add(0, 0, 600, 900,'main').setZoom(1).setName('mini');
     this.load.image('mapPNG','assets/imageofmap.png')
     
    
@@ -178,19 +183,21 @@ class MazeMazeRunner extends Phaser.Scene{
     ymultiplat2(1455,-1500,9)
     ymultiplat2(1455,-790,3)
     ymultiplat2(1650,-1690,23)
-
+    //platforms that kills player when touched, added at the bottom of the map to prevent players from getting stuck under the map.
     dmgplatforms= this.physics.add.staticGroup();
     dmgMultPlat(-2800,2200,200)
-
     this.add.image(400, 400, 'sky').setScale(2);
     this.add.image(400,200, 'mapPNG').setScale(2);
 
-  
+    this.minimap =  this.cameras.add(0, 0, 600, 1000).setZoom(0.2).setName('mini').setVisible(false);
+
+
+
+  // player sprite 
     player = this.physics.add.sprite(100,1520, 'dude2');
     player.setBounce(0.2)
     player.setCollideWorldBounds(true);
     this.cameras.main.startFollow(player, true,).setZoom(1) //camera follows player 
-    
   //sprite animations for main character 
     this.anims.create({
       key: 'right',
@@ -200,13 +207,11 @@ class MazeMazeRunner extends Phaser.Scene{
       frameRate: 10,
       repeate: -1
     });
-  
     this.anims.create({
       key: 'turn',
       frames: [ { key: 'dude2', frame: 4 } ],
       frameRate: 20
   });
-  
   this.anims.create({
     key: 'left',
     frames: this.anims.generateFrameNumbers('dude3'),
@@ -223,9 +228,6 @@ class MazeMazeRunner extends Phaser.Scene{
     frameRate: 30,
     repeat: 1
   })
-
-
-  
     // stars2 = this.physics.add.image(0,0, "stars").setOrigin(0,0)
     // this.stars2.setMaxVelocity(4, speedDown);
  
@@ -282,7 +284,7 @@ class MazeMazeRunner extends Phaser.Scene{
       yStarGroup(-100,-1300,4,80)
       yStarGroup(-200,-1300,4,80)
       yStarGroup(-300,-1300,4,80)
-   
+        //checks if player colides with platforms ,same with stars , and stars 
         this.physics.add.collider(player, platforms);
         this.physics.add.collider(stars,platforms);
         this.physics.add.overlap(player, stars, collectStar, null, this);
@@ -294,13 +296,14 @@ class MazeMazeRunner extends Phaser.Scene{
         
   }
   update(){
-    // if(keyW.isDown){
-    //   miniMap.call(this) 
-    //   console.log('MiniMapAdded') 
-    // }else {
-    //   hidemap.call(this)
+    if(keyW.isDown){
+      this.minimap.setVisible(true);
+      console.log('MiniMapAdded') 
+    }else {
+      this.minimap.setVisible(false);
+      
     
-    // }
+    }
     if (this.cursors.left.isDown)
     {
       player.setVelocityX(-360); 
