@@ -6,13 +6,15 @@ const sizes = {
   height: 900,
 }
 const gravity = {
-  light: 100,
+  light: 650,
   normal:600,
   heavy: 900,
 }
 var player;
 var platforms;
+var dmgplatforms;
 var stars;
+var stars2;
 var keyW; //may not include map in final game due to lag build up, but i think the culptret is the constant checking of else if . 
 
 
@@ -32,6 +34,41 @@ function ymultiplat2(x,y,b){
   console.log('hello')
   }
 }
+function dmgMultPlat(x,y,b){
+  for(let i = 1; i <= b; i ++){
+  dmgplatforms.create.x = x 
+  x =  dmgplatforms.create.x + 64
+  platforms.create(x,y,'pixel'); 
+  console.log('hello')
+  }
+}
+// function xStarGroup(x,y,b){
+//   this.physics.add.staticGroup({
+//   key: 'star',
+//   repeat: 20,
+//   setXY: { x: 12, y: 1400, stepX: 100 }
+// });
+// }
+
+function xStarGroup(x,y,b,spacing){
+  for(let i = 1; i <= b; i ++){
+    stars.create.x = x 
+    x =  stars.create.x + spacing
+    stars.create(x,y,'star'); 
+    console.log('hello')
+    }
+}
+function yStarGroup(x,y,b,spacing){
+  for(let i = 1; i <= b; i ++){
+    stars.create.y = y 
+    y =  stars.create.y + spacing
+    stars.create(x,y,'star'); 
+    console.log('hello')
+    }
+}
+
+
+
 function collectStar (player, star)
 {
     star.disableBody(true, true);
@@ -67,12 +104,13 @@ class MazeMazeRunner extends Phaser.Scene{
     // this.load.spritesheet('dude4','assets/Hobbit/pngs/JUMP.png',{frameWidth: 60, frameHeight: 50})
     this.cameras.add(0, 0, 600, 900,'main').setZoom(1).setName('mini');
     this.load.image('mapPNG','assets/imageofmap.png')
+    
 
   }
   create(){
-    this.add.image(400, 400, 'sky').setScale(2);
-    this.physics.world.setBounds(-2000,-2000,4200,4200); 
-    platforms = this.physics.add.staticGroup();
+  this.add.image(400, 400, 'sky').setScale(2);
+  this.physics.world.setBounds(-2000,-2000,4200,4200); 
+  platforms = this.physics.add.staticGroup();
     //main spawn platform
     xmultiplat2(-650,1580,34)
     xmultiplat2(-590,1644,33)
@@ -141,11 +179,14 @@ class MazeMazeRunner extends Phaser.Scene{
     ymultiplat2(1455,-790,3)
     ymultiplat2(1650,-1690,23)
     this.add.image(400,200, 'mapPNG').setScale(2);
+
+    dmgplatforms= this.physics.add.staticGroup();
+    dmgMultPlat(-2800,2200,200)
   
-    player = this.physics.add.sprite(100,1520, 'dude2');   
+    player = this.physics.add.sprite(100,1520, 'dude2');
     player.setBounce(0.2)
     player.setCollideWorldBounds(true);
-    this.cameras.main.startFollow(player, true,).setZoom(.6) //camera follows player 
+    this.cameras.main.startFollow(player, true,).setZoom(.2) //camera follows player 
     
   //sprite animations for main character 
     this.anims.create({
@@ -179,15 +220,66 @@ class MazeMazeRunner extends Phaser.Scene{
     frameRate: 30,
     repeat: 1
   })
-      
-    stars = this.physics.add.group({
-          key: 'star',
-          repeat: 11,
-          setXY: { x: 12, y: 0, stepX: 70 }
-      });
-         stars.children.iterate(function (child) {
-         child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-       });
+
+
+  
+    // stars2 = this.physics.add.image(0,0, "stars").setOrigin(0,0)
+    // this.stars2.setMaxVelocity(4, speedDown);
+ 
+    //stars around the map 
+    stars = this.physics.add.staticGroup()
+      xStarGroup(-600,1400,20,100)
+      xStarGroup(-550,1500,20,100)
+      xStarGroup(-930,-1790,33,80)
+      xStarGroup(-850,-1600,28,80)
+      xStarGroup(-850,-500,6,80)
+      xStarGroup(-800,-350,5,80)
+      xStarGroup(-800,-250,5,80)
+      xStarGroup(100,-440,17,80)
+      xStarGroup(100,-440,17,80)
+      xStarGroup(140,-240,14,100)
+      xStarGroup(140,-640,8,100)
+      xStarGroup(140,-740,4,100)
+      xStarGroup(140,-840,4,100)
+      xStarGroup(140,-940,4,100)
+      xStarGroup(140,-1040,4,100)
+      xStarGroup(140,-1200,8,100)
+      xStarGroup(140,-1300,8,100)
+      xStarGroup(-430,1200,10,145)
+      xStarGroup(-430,1150,10,145)
+      xStarGroup(500,1000,8,64)
+      xStarGroup(600,800,5,64)
+      xStarGroup(700,600,4,64)
+      xStarGroup(280,190,9,64)
+      xStarGroup(180,0,7,64)
+      xStarGroup(-900,1900,16,100)
+      yStarGroup(-700,30,20,64)
+      yStarGroup(-500,30,18,64)
+      yStarGroup(-300,30,15,64)
+      yStarGroup(-100,100,12,64)
+      yStarGroup(80,100,12,64)
+      yStarGroup(260,130,11,64)
+      yStarGroup(460,330,8,64)
+      yStarGroup(1050,-100,7,64)
+      yStarGroup(1230,-230,19,80)
+      yStarGroup(1430,-150,18,80)
+      yStarGroup(1630,-150,18,80)
+      yStarGroup(1730,-1750,20,80)
+      yStarGroup(1560,-1700,16,80)
+      yStarGroup(1360,-1500,11,80)
+      yStarGroup(1260,-1500,11,80)
+      yStarGroup(1160,-1500,11,80)
+      yStarGroup(80,-1570,21,80)
+      yStarGroup(-500,-1570,11,80)
+      yStarGroup(-770,-1590,10,80)
+      yStarGroup(-670,-1590,10,80)
+      yStarGroup(-930,-1790,20,80)
+      yStarGroup(-100,-730,6,80)
+      yStarGroup(-200,-730,6,80)
+      yStarGroup(-100,-1300,4,80)
+      yStarGroup(-200,-1300,4,80)
+      yStarGroup(-300,-1300,4,80)
+   
         this.physics.add.collider(player, platforms);
         this.physics.add.collider(stars,platforms);
         this.physics.add.overlap(player, stars, collectStar, null, this);
@@ -206,12 +298,12 @@ class MazeMazeRunner extends Phaser.Scene{
     // }
     if (this.cursors.left.isDown)
     {
-      player.setVelocityX(-160); 
+      player.setVelocityX(-360); 
       player.anims.play('left', true);
     }
     else if (this.cursors.right.isDown)
     {
-        player.setVelocityX(160);
+        player.setVelocityX(360);
     
         player.anims.play('right', true);
     }
@@ -221,11 +313,11 @@ class MazeMazeRunner extends Phaser.Scene{
         player.anims.play('turn');
     }
     if (this.cursors.up.isDown && player.body.touching.down)
-    {   player.setVelocityY(-330);}
+    {   player.setVelocityY(-630);}
     if (this.cursors.up.isDown && player.body.touching.right)
-    {player.setVelocityY(-330);}
+    {player.setVelocityY(-630);}
     if (this.cursors.up.isDown && player.body.touching.left){
-      player.setVelocityY(-330);}
+      player.setVelocityY(-630);}
 
   this.cameras.main.startFollow(player, true,)
   }
