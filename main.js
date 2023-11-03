@@ -1,38 +1,34 @@
 import './style.css'
 import Phaser from 'phaser'
-
-const sizes = {
+//size of canvas screen easy access
+const sizes = {     
   width: 600,
   height: 900,
 }
+//chang gravity ,feature not implemented where an item will change gravity 
 const gravity = {
   light: 650,
   normal:800,
   heavy: 900,
 }
+//all our variables 
 var player;
 var platforms;
 var dmgplatforms;
 var stars;
-var keyW; //may not include map in final game due to lag build up, but i think the culptret is the constant checking of else if . 
-var keyQ
+var keyW;
+var keyQ;
 var score = 0
 var textScore
 var textTime
 var remainingTime 
 var timedEvent
-var music
-const gameStartDiv = document.querySelector('#gameStartDiv')
 const menuStartBtn = document.querySelector('#menuStartBtn')
 const gameEndMenu = document.querySelector('#gameEndMenu')
 const gameWinLoseSpan = document.querySelector('#gameWinLoseSpan')
 const gameEndScoreSpan = document.querySelector('#gameEndScoreSpan')
 
-
-
-
-
-
+//Function created to create platforms quicker by using a for loop which checks the number we put in the "b"  parameter and keeps creating a new block on the X axis until i has reached the value of b 
 function xmultiplat2(x,y,b){
   for(let i = 1; i <= b; i ++){
   platforms.create.x = x 
@@ -40,6 +36,7 @@ function xmultiplat2(x,y,b){
   platforms.create(x,y,'pixel'); 
  
   }
+  //same as above but now creates the row in the Y axis.
 }
 function ymultiplat2(x,y,b){
   for(let i = 1; i <= b; i ++){
@@ -48,6 +45,7 @@ function ymultiplat2(x,y,b){
   platforms.create(x,y,'pixel'); 
   
   }
+  //same function used to create dmg Platforms , can not damage player but is used so player does not get stuck on the bottom of the map 
 }
 function dmgMultPlat(x,y,b){
   for(let i = 1; i <= b; i ++){
@@ -57,14 +55,7 @@ function dmgMultPlat(x,y,b){
  
   }
 }
-// function xStarGroup(x,y,b){
-//   this.physics.add.staticGroup({
-//   key: 'star',
-//   repeat: 20,
-//   setXY: { x: 12, y: 1400, stepX: 100 }
-// });
-// }
-
+// same for loop funciton used to place collectable gems around the map
 function xStarGroup(x,y,b,spacing){
   for(let i = 1; i <= b; i ++){
     stars.create.x = x 
@@ -81,13 +72,14 @@ function yStarGroup(x,y,b,spacing){
 }
 
 
-
+//function which removes a gem on screen and adds 100 to our current score and adds it to our textScore variable which is used later in our code to show the current score near the player when pressing q
 function collectStar (player, star)
 {
     star.disableBody(true, true);
     score += 100
     textScore.setText('Score:' + score)
 }
+//These next two functions create our minimap view of the game world , currently only zooms out , but in later versions i want to make it look more like a map on parchment. 
 function miniMap(){
     this.minimap =  this.cameras.add(100, 100, 400, 100).setZoom(0.5).setName('mini');
     this.cameras.scrollX = 300;
@@ -98,6 +90,7 @@ function hidemap(){
   this.minimap = this.cameras.add(100, 100, 400, 100).setZoom(0.5).setName('mini').setVisible(false);
 
 }
+// Phasers blueprint to create a game, allows us to extract code onto another javascript document without bringing other code outside our class. 
 class MazeMazeRunner extends Phaser.Scene{
   constructor (){
     super("gamescene");
@@ -105,35 +98,37 @@ class MazeMazeRunner extends Phaser.Scene{
   preload(){
     //background image 
     this.load.image('sky', 'assets/pexels-magda-ehlers-2114014.jpg');
+    //rock assets to show buttons player can use 
     this.load.image('rockQ', 'assets/RockQ.png')
     this.load.image('rockW', 'assets/RockW.png')
     this.load.image('rockBig', 'assets/Rock3.png')
-    //star pickup image 
+    this.load.image('rockBig2', 'assets/Rock4.png')
+    //gem img for item pickup  
     this.load.image('star', 'assets/Gem.png');
-    //not used asset 
-    this.load.image('bomb', 'assets/bomb.png')
+    //platform box used to create collision 
    this.load.image('pixel', 'assets/platforms/purple.png')
    
 
-
+// main character sprite sheet 
    this.load.spritesheet('necromancer', 'assets/necromancer2.png',{frameHeight:24,frameWidth:24})
    
-
+//png of whole map since i couldnot get tileset to work currently 
     this.load.image('mapPNG','assets/imageofmap.png')
+//background music , temporary until i find a better song or pay for a licence for other music 
     this.load.audio('bgm', 'assets/watermarked_Sam_Barsh_Tell_Me_A_Cribtime_Story_instrumental_chorus_1_00.mp3')
-    
-   
-
   }
+  //where we create our objects that will show up on the screen 
   create(){
+    //pauses our game until we reactivate it a funciton below 
     this.scene.pause("gamescene")
     this.bgm = this.sound.add('bgm')
     this.bgm.play()
 
-
+    //world bounds where player cant cross 
   this.physics.world.setBounds(-2000,-2000,4200,4200); 
+  //making platforms a staticGroup so they are not effected by gravity like our character. 
   platforms = this.physics.add.staticGroup();
-    //main spawn platform
+    //function from above with our parameters 
     xmultiplat2(-650,1580,34)
     xmultiplat2(-590,1644,33)
     xmultiplat2(-480,1708,31)
@@ -200,16 +195,17 @@ class MazeMazeRunner extends Phaser.Scene{
     ymultiplat2(1455,-1500,9)
     ymultiplat2(1455,-790,3)
     ymultiplat2(1650,-1690,23)
-    //platforms that kills player when touched, added at the bottom of the map to prevent players from getting stuck under the map.
+    //platforms that kills player when touched, added at the bottom of the map to prevent players from getting stuck under the map. Does not yet kill player but is a place holder to stop player from getting stuck 
     dmgplatforms= this.physics.add.staticGroup();
     dmgMultPlat(-2800,2200,200)
-   
+   //adding our assets in game, map, rocks, background img, and our minimap camera
     this.add.image(400, 400, 'sky').setScale(2);
     this.add.image(400,200, 'mapPNG').setScale(2);
-    this.add.image(200,1513, 'rockQ').setScale(1);
+    this.add.image(300,1513, 'rockQ').setScale(1);
     this.add.image(0,1513, 'rockW').setScale(1);
     this.add.image(-500,1485, 'rockBig').setScale(1.2)
     this.add.image(1100,1485, 'rockBig').setScale(1.2)
+    this.add.image(200,1495, 'rockBig2').setScale(1);
     this.minimap =  this.cameras.add(0, 0, 600, 1000).setZoom(0.2).setName('mini').setVisible(false);
 
 
@@ -223,9 +219,9 @@ class MazeMazeRunner extends Phaser.Scene{
     player.setBounce(0.2)
     player.setCollideWorldBounds(true);
   
-   
+   //make a camrea that follows the player ... causing an issue when placing score and time to follow player also... 
    this.followCam = this.cameras.main.startFollow(player, true,) //camera follows player 
-  //sprite animations for main character 
+  //sprite animations for main character some are not used do to not finding a sprite with all these animations but will leave as placeholders for when i replace the sprite 
     this.anims.create({
       key: 'right',
       frames: this.anims.generateFrameNumbers('necromancer',{
@@ -233,7 +229,6 @@ class MazeMazeRunner extends Phaser.Scene{
         end: 3,
         frameRate: 1,
       })
-  
     });
     this.anims.create({
       key: 'idle',
@@ -241,10 +236,8 @@ class MazeMazeRunner extends Phaser.Scene{
        frameRate: .2,
        start:0,
         end:4,
-         repeat: 1,
-
+         repeat: 1
       }),
-  
   });
   this.anims.create({
     key: 'left',
@@ -252,9 +245,7 @@ class MazeMazeRunner extends Phaser.Scene{
     start: 4,
     end: 7,
     frameRate: .2,
-    }),
-
-   
+    }), 
   });
   this.anims.create({
     key: 'jump',
@@ -264,7 +255,6 @@ class MazeMazeRunner extends Phaser.Scene{
     frameRate: 1,
     repeat: 0
     }),
-   
   })
   this.anims.create({
     key: 'wall',
@@ -273,7 +263,6 @@ class MazeMazeRunner extends Phaser.Scene{
     end: 17,
     frameRate: 1,
     }),
-   
   })
 
     //stars around the map 
@@ -329,17 +318,18 @@ class MazeMazeRunner extends Phaser.Scene{
       yStarGroup(-100,-1300,4,80)
       yStarGroup(-200,-1300,4,80)
       yStarGroup(-300,-1300,4,80)
-        //checks if player colides with platforms ,same with stars , and stars 
+        //checks if player colides with platforms ,same with stars , and stars collection
         this.physics.add.collider(player, platforms);
         this.physics.add.collider(stars,platforms);
         this.physics.add.overlap(player, stars, collectStar, null, this);
-
+        //allows us to use the arrow keys as our movement... later versions i will change it to ASWD for movment 
         this.cursors = this.input.keyboard.createCursorKeys()
+        //allows the use of W and Q .similar to eventlisenters 
         keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         keyQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
 
 
-
+        // creating our score counter which in our update section will be changed to follow the player 
         textScore = this.add.text(-120,11, "Score: 0",{
           font: "30px Amatic SC",
           stroke: 10,
@@ -349,7 +339,7 @@ class MazeMazeRunner extends Phaser.Scene{
         
         
         }) 
-
+          // creating our time counter which is also will be changed to follow player when Q is pressed 
         textTime = this.add.text(-20,-100, "Remaining Time: 00",{
           font: "25px Amatic SC",
           stroke: 10,
@@ -357,17 +347,17 @@ class MazeMazeRunner extends Phaser.Scene{
           fill: "#F0F8EA",
           // backgroundColor: "rgb(144,69,214)"
         })
-
+          // this is our countdown timer which will be used in our textTime . Thanks to @lowpolyprincess for the great tutorial 
         timedEvent = this.time.delayedCall(60000,this.gameOver,[], this)
        
      
         
   }
   update(){
-
+    
     remainingTime  = timedEvent.getRemainingSeconds()
     textTime.setText(`Remaining Time: ${Math.round(remainingTime).toString()} sec`)
-
+// our if statments to check what key is being pressed and what to do if it is pressed .
         if(keyW.isDown ){
       this.minimap.setVisible(true);
       player.setVelocityX(0)
@@ -406,8 +396,6 @@ class MazeMazeRunner extends Phaser.Scene{
       player.setVelocityY(-630);
       repeat: -1
     }
-
-
         if (this.cursors.up.isDown && player.body.touching.right )
     {player.setVelocityY(-630);}
     if (this.cursors.up.isDown && player.body.touching.left){
@@ -419,7 +407,8 @@ class MazeMazeRunner extends Phaser.Scene{
         }
  
   }
-
+// creates our game over screen base code gotten from https://www.youtube.com/watch?v=0qtg-9M3peI&t=676s  
+// modified to add another variation if the player goes pass a certain score. 
   gameOver(){
     this.sys.game.destroy(true)
     if(score <= 7500){
@@ -453,6 +442,7 @@ physics: {
 };
 const game = new Phaser.Game(config);
 
+// allows the start button to resume the game which was paused in on line 123
 menuStartBtn.addEventListener("click", function(){
   gameMenu.style.display="none"
   game.scene.resume("gamescene")
