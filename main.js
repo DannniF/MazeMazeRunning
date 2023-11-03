@@ -25,6 +25,9 @@ var music
 const gameStartDiv = document.querySelector('#gameStartDiv')
 const menuStartBtn = document.querySelector('#menuStartBtn')
 const gameEndMenu = document.querySelector('#gameEndMenu')
+const gameWinLoseSpan = document.querySelector('#gameWinLoseSpan')
+const gameEndScoreSpan = document.querySelector('#gameEndScoreSpan')
+
 
 
 
@@ -82,7 +85,7 @@ function yStarGroup(x,y,b,spacing){
 function collectStar (player, star)
 {
     star.disableBody(true, true);
-    score += Math.round(remainingTime)
+    score += 100
     textScore.setText('Score:' + score)
 }
 function miniMap(){
@@ -110,21 +113,22 @@ class MazeMazeRunner extends Phaser.Scene{
     //not used asset 
     this.load.image('bomb', 'assets/bomb.png')
    this.load.image('pixel', 'assets/platforms/purple.png')
+   
 
 
    this.load.spritesheet('necromancer', 'assets/necromancer2.png',{frameHeight:24,frameWidth:24})
    
 
     this.load.image('mapPNG','assets/imageofmap.png')
+    this.load.audio('bgm', 'assets/watermarked_Sam_Barsh_Tell_Me_A_Cribtime_Story_instrumental_chorus_1_00.mp3')
     
    
 
   }
   create(){
-    //music 
-    // this.bgMusic = this.sound.add("bgMusic")
-    // this.bgMusic.play()
-
+    this.scene.pause("gamescene")
+    this.bgm = this.sound.add('bgm')
+    this.bgm.play()
 
 
   this.physics.world.setBounds(-2000,-2000,4200,4200); 
@@ -271,9 +275,7 @@ class MazeMazeRunner extends Phaser.Scene{
     }),
    
   })
-    // stars2 = this.physics.add.image(0,0, "stars").setOrigin(0,0)
-    // this.stars2.setMaxVelocity(4, speedDown);
- 
+
     //stars around the map 
     stars = this.physics.add.staticGroup()
       xStarGroup(-600,1400,20,100)
@@ -338,18 +340,22 @@ class MazeMazeRunner extends Phaser.Scene{
 
 
 
-        textScore = this.add.text(-120,10, "Score: 0",{
-          font: "25px Arial",
-          fill: "#000000",
-          backgroundColor: "gold",
-          
+        textScore = this.add.text(-120,11, "Score: 0",{
+          font: "30px Amatic SC",
+          stroke: 10,
+          strokeThickness: 1,
+          fill: "#F0F8EA",
+          // backgroundColor: "rgb(144,69,214)",
+        
         
         }) 
 
         textTime = this.add.text(-20,-100, "Remaining Time: 00",{
-          font: "25px Arial",
-          fill: "#000000",
-          backgroundColor: "gold"
+          font: "25px Amatic SC",
+          stroke: 10,
+          strokeThickness: 1,
+          fill: "#F0F8EA",
+          // backgroundColor: "rgb(144,69,214)"
         })
 
         timedEvent = this.time.delayedCall(60000,this.gameOver,[], this)
@@ -411,45 +417,22 @@ class MazeMazeRunner extends Phaser.Scene{
         if(this.cursors.down.isDown){
           player.setVelocityY(830)
         }
+ 
+  }
 
-
-
-    // if(this.cursors.up.JustDown && player.body.touching.down){
-
-    // }
-
-    // if(this.cursors.left.JustDown && this.cursors.up && player.body.touching.right){
-    //   player.anims.play('wall',true)
-    // }
-    // if (this.cursors.up.JustDown && player.body.touching.down && keyW.isUp && keyQ.isUp  )
-    // {   player.setVelocityY(-630);}
-
-
-
-
-
-
-
-
-       // if(keyW.isDown ){
-    //   this.minimap.setVisible(true);
-    //   player.setVelocityX(0)
-    //   player.setVelocityY(0)
-    // } else{
-    //   this.minimap.setVisible(false);}
-    // if(keyQ.isDown ){
-    //   textScore.setVisible(true)
-    //   textTime.setVisible(true)
-    //   textScore.x = player.x -50
-    //   textScore.y = player.y -50
-    //   textTime.x = player.x  -100
-    //  textTime.y = player. y -100
-    //   player.setVelocityY(0)
-    // }else{
-    //   textScore.setVisible(false)
-    //   textTime.setVisible(false)
-
-    // }
+  gameOver(){
+    this.sys.game.destroy(true)
+    if(score <= 7500){
+      gameEndScoreSpan.textContent =`Final Score: ${score}`
+      gameWinLoseSpan.textContent = "Wow that was quick, but can you go quicker....   Refresh Page to Play Again"
+    }else if (score >= 1000){
+      gameEndScoreSpan.textContent = `Final Score: ${score}`
+      gameWinLoseSpan.textContent = "A true Champ Congrats You WIN!!!!!!!    Refresh Page to Play Again"
+    }else {
+      gameEndScoreSpan.textContent = `Final Score: ${score}`
+      gameWinLoseSpan.textContent = "You Lose! Refresh WebPage to Try Again   Refresh Page to Play Again"
+    }
+    gameEndMenu.style.display="flex"
   }
   
 }
@@ -469,3 +452,8 @@ physics: {
   scene: MazeMazeRunner
 };
 const game = new Phaser.Game(config);
+
+menuStartBtn.addEventListener("click", function(){
+  gameMenu.style.display="none"
+  game.scene.resume("gamescene")
+})
