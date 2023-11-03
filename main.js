@@ -15,12 +15,17 @@ var platforms;
 var dmgplatforms;
 var stars;
 var keyW; //may not include map in final game due to lag build up, but i think the culptret is the constant checking of else if . 
-var points = 0
+var keyQ
+var score = 0
 var textScore
 var textTime
 var remainingTime 
 var timedEvent
 var music
+const gameStartDiv = document.querySelector('#gameStartDiv')
+const menuStartBtn = document.querySelector('#menuStartBtn')
+const gameEndMenu = document.querySelector('#gameEndMenu')
+
 
 
 
@@ -77,6 +82,8 @@ function yStarGroup(x,y,b,spacing){
 function collectStar (player, star)
 {
     star.disableBody(true, true);
+    score += Math.round(remainingTime)
+    textScore.setText('Score:' + score)
 }
 function miniMap(){
     this.minimap =  this.cameras.add(100, 100, 400, 100).setZoom(0.5).setName('mini');
@@ -90,29 +97,35 @@ function hidemap(){
 }
 class MazeMazeRunner extends Phaser.Scene{
   constructor (){
-    super();
+    super("gamescene");
   }
   preload(){
     //background image 
     this.load.image('sky', 'assets/pexels-magda-ehlers-2114014.jpg');
+    this.load.image('rockQ', 'assets/RockQ.png')
+    this.load.image('rockW', 'assets/RockW.png')
+    this.load.image('rockBig', 'assets/Rock3.png')
     //star pickup image 
-    this.load.image('star', 'assets/star.png');
+    this.load.image('star', 'assets/Gem.png');
     //not used asset 
     this.load.image('bomb', 'assets/bomb.png')
-   let yo = this.load.image('pixel', 'assets/platforms/purple.png')
-    
-  
-    //character sprites for jumping running and idle animations
-    this.load.spritesheet('dude2','assets/Hobbit/pngs/NEWHOBBITSHEET.png',
-      {frameWidth: 60, frameHeight: 50} )
-    this.load.spritesheet('dude3','assets/Hobbit/pngs/REVERSEDRUN.png',{frameWidth: 60, frameHeight: 50})
-    // this.load.spritesheet('dude4','assets/Hobbit/pngs/JUMP.png',{frameWidth: 60, frameHeight: 50})
+   this.load.image('pixel', 'assets/platforms/purple.png')
+
+
+   this.load.spritesheet('necromancer', 'assets/necromancer2.png',{frameHeight:24,frameWidth:24})
+   
+
     this.load.image('mapPNG','assets/imageofmap.png')
     
    
 
   }
   create(){
+    //music 
+    // this.bgMusic = this.sound.add("bgMusic")
+    // this.bgMusic.play()
+
+
 
   this.physics.world.setBounds(-2000,-2000,4200,4200); 
   platforms = this.physics.add.staticGroup();
@@ -186,47 +199,77 @@ class MazeMazeRunner extends Phaser.Scene{
     //platforms that kills player when touched, added at the bottom of the map to prevent players from getting stuck under the map.
     dmgplatforms= this.physics.add.staticGroup();
     dmgMultPlat(-2800,2200,200)
+   
     this.add.image(400, 400, 'sky').setScale(2);
     this.add.image(400,200, 'mapPNG').setScale(2);
-
+    this.add.image(200,1513, 'rockQ').setScale(1);
+    this.add.image(0,1513, 'rockW').setScale(1);
+    this.add.image(-500,1485, 'rockBig').setScale(1.2)
+    this.add.image(1100,1485, 'rockBig').setScale(1.2)
     this.minimap =  this.cameras.add(0, 0, 600, 1000).setZoom(0.2).setName('mini').setVisible(false);
 
 
-
+  
   // player sprite 
-    player = this.physics.add.sprite(100,1520, 'dude2');
+    player = this.physics.add.sprite(100,1500, 'necromancer');
+    player.setSize(10,17)
+    player.setOffset(7,7)
+    
+    player.setScale(3)
     player.setBounce(0.2)
     player.setCollideWorldBounds(true);
-    this.cameras.main.startFollow(player, true,).setZoom(1) //camera follows player 
+  
+   
+   this.followCam = this.cameras.main.startFollow(player, true,) //camera follows player 
   //sprite animations for main character 
     this.anims.create({
       key: 'right',
-      frames: this.anims.generateFrameNumbers('dude3'),
-      start: 1,
-      end: 3,
-      frameRate: 10,
-      repeate: -1
+      frames: this.anims.generateFrameNumbers('necromancer',{
+        start: 0,
+        end: 3,
+        frameRate: 1,
+      })
+  
     });
     this.anims.create({
-      key: 'turn',
-      frames: [ { key: 'dude2', frame: 4 } ],
-      frameRate: 20
+      key: 'idle',
+      frames: this.anims.generateFrameNumbers('necromancer',{
+       frameRate: .2,
+       start:0,
+        end:4,
+         repeat: 1,
+
+      }),
+  
   });
   this.anims.create({
     key: 'left',
-    frames: this.anims.generateFrameNumbers('dude3'),
-    start: 1,
-    end: 3,
-    frameRate: 10,
-    repeat: -1
+    frames: this.anims.generateFrameNumbers('necromancer',{
+    start: 4,
+    end: 7,
+    frameRate: .2,
+    }),
+
+   
   });
   this.anims.create({
     key: 'jump',
-    frames: this.anims.generateFrameNumbers('dude3'),
-    start: 1,
-    end: 7,
-    frameRate: 30,
-    repeat: 1
+    frames: this.anims.generateFrameNumbers('necromancer',{
+      start: 21,
+    end: 23,
+    frameRate: 1,
+    repeat: 0
+    }),
+   
+  })
+  this.anims.create({
+    key: 'wall',
+    frames: this.anims.generateFrameNumbers('necromancer',{
+      start: 16,
+    end: 17,
+    frameRate: 1,
+    }),
+   
   })
     // stars2 = this.physics.add.image(0,0, "stars").setOrigin(0,0)
     // this.stars2.setMaxVelocity(4, speedDown);
@@ -291,46 +334,124 @@ class MazeMazeRunner extends Phaser.Scene{
 
         this.cursors = this.input.keyboard.createCursorKeys()
         keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        keyQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
 
+
+
+        textScore = this.add.text(-120,10, "Score: 0",{
+          font: "25px Arial",
+          fill: "#000000",
+          backgroundColor: "gold",
+          
+        
+        }) 
+
+        textTime = this.add.text(-20,-100, "Remaining Time: 00",{
+          font: "25px Arial",
+          fill: "#000000",
+          backgroundColor: "gold"
+        })
+
+        timedEvent = this.time.delayedCall(60000,this.gameOver,[], this)
+       
      
         
   }
   update(){
-    if(keyW.isDown){
+
+    remainingTime  = timedEvent.getRemainingSeconds()
+    textTime.setText(`Remaining Time: ${Math.round(remainingTime).toString()} sec`)
+
+        if(keyW.isDown ){
       this.minimap.setVisible(true);
-      console.log('MiniMapAdded') 
-    }else {
-      this.minimap.setVisible(false);
-      
-    
+      player.setVelocityX(0)
+      player.setVelocityY(0)
+    } else{
+      this.minimap.setVisible(false);}
+    if(keyQ.isDown ){
+      textScore.setVisible(true)
+      textTime.setVisible(true)
+      textScore.x = player.x -50
+      textScore.y = player.y -50
+      textTime.x = player.x  -100
+     textTime.y = player. y -100
+      player.setVelocityY(0)
+    }else{
+      textScore.setVisible(false)
+      textTime.setVisible(false)
+
     }
-    if (this.cursors.left.isDown)
-    {
+    if(this.cursors.left.isDown && keyW.isUp && keyQ.isUp){      
       player.setVelocityX(-360); 
       player.anims.play('left', true);
-    }
-    else if (this.cursors.right.isDown)
+    } else if (this.cursors.right.isDown && keyW.isUp && keyQ.isUp)
     {
         player.setVelocityX(360);
-    
         player.anims.play('right', true);
     }
     else
     {
         player.setVelocityX(0);
-        player.anims.play('turn');
+      
     }
-    if (this.cursors.up.isDown && player.body.touching.down)
-    {   player.setVelocityY(-630);}
-    if (this.cursors.up.isDown && player.body.touching.right)
+
+    if(this.cursors.up.isDown && player.body.touching.down){
+      player.anims.play('jump',true)
+      player.setVelocityY(-630);
+      repeat: -1
+    }
+
+
+        if (this.cursors.up.isDown && player.body.touching.right )
     {player.setVelocityY(-630);}
     if (this.cursors.up.isDown && player.body.touching.left){
       player.setVelocityY(-630);}
       if (this.cursors.up.isDown && this.cursors.left.isDown && player.body.touching.top){
         player.setVelocityY(-630);}
+        if(this.cursors.down.isDown){
+          player.setVelocityY(830)
+        }
 
-  this.cameras.main.startFollow(player, true,)
+
+
+    // if(this.cursors.up.JustDown && player.body.touching.down){
+
+    // }
+
+    // if(this.cursors.left.JustDown && this.cursors.up && player.body.touching.right){
+    //   player.anims.play('wall',true)
+    // }
+    // if (this.cursors.up.JustDown && player.body.touching.down && keyW.isUp && keyQ.isUp  )
+    // {   player.setVelocityY(-630);}
+
+
+
+
+
+
+
+
+       // if(keyW.isDown ){
+    //   this.minimap.setVisible(true);
+    //   player.setVelocityX(0)
+    //   player.setVelocityY(0)
+    // } else{
+    //   this.minimap.setVisible(false);}
+    // if(keyQ.isDown ){
+    //   textScore.setVisible(true)
+    //   textTime.setVisible(true)
+    //   textScore.x = player.x -50
+    //   textScore.y = player.y -50
+    //   textTime.x = player.x  -100
+    //  textTime.y = player. y -100
+    //   player.setVelocityY(0)
+    // }else{
+    //   textScore.setVisible(false)
+    //   textTime.setVisible(false)
+
+    // }
   }
+  
 }
 
 const config = {

@@ -25,7 +25,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  border: 1px solid red;
+
 }
 
 html,body{
@@ -33,7 +33,7 @@ html,body{
 }
 
 body{
-  background-color: var(--black);
+  background-color: var(--grey);
   color: var(--pink);
   display: flex;
   flex-direction: column;
@@ -45,6 +45,7 @@ header, footer{
   justify-content: center;
   align-items: center;
   padding: 40px 20px;
+  background-color: var(--pink);
 }
 
 main{
@@ -74,4 +75,16 @@ main{
   z-index:2;
 }
 
-#
+h1{
+  font-family: 'Amatic SC', sans-serif ;
+  margin: 30px;
+  color: #312f2f;
+  font-size:xx-large;
+}
+
+p{
+  font-family: 'Amatic SC', sans-serif ;
+  margin: 30px;
+  color: #312f2f;
+  font-size: large;
+}
